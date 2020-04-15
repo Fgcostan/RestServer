@@ -8,10 +8,11 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const _ = require('underscore');
 const Usuario = require('../models/usuario');
+const { VerificarToken, VerificarAdmin_Role } = require('../middlewares/autenticacion');
 
 const app = express();
 
-app.get('/usuario', function(req, res) {
+app.get('/usuario', VerificarToken, function(req, res) {
 
     let desde = Number(req.query.desde) || 0;
     let limit = Number(req.query.limite) || 5;
@@ -38,9 +39,10 @@ app.get('/usuario', function(req, res) {
 
 });
 
-app.post('/usuario', function(req, res) {
-    let body = req.body;
+app.post('/usuario', [VerificarToken, VerificarAdmin_Role], function(req, res) {
 
+    //if (req.usuario.role === 'ADMIN_ROLE')
+    let body = req.body;
     let user = new Usuario({
         nombre: body.nombre,
         email: body.email,
@@ -64,21 +66,9 @@ app.post('/usuario', function(req, res) {
             usuario: userDB
         });
     });
-    /*
-        if (body.nombre === undefined) {
-            res.status(400).json({
-                ok: false,
-                mensaje: 'El nombre es necesario'
-            });
-        } else {
-            res.json({
-                persona: body
-            });
-        }
-    */
 });
 
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', [VerificarToken, VerificarAdmin_Role], function(req, res) {
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']); //uso pick de underscore para filtras los campos que quiero del body
 
@@ -98,7 +88,7 @@ app.put('/usuario/:id', function(req, res) {
     });
 });
 
-app.delete('/usuario/:id', function(req, res) { //no se acostumbra a borrar registros
+app.delete('/usuario/:id', [VerificarToken, VerificarAdmin_Role], function(req, res) { //no se acostumbra a borrar registros
 
     let id = req.params.id;
 

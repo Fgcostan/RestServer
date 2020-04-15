@@ -13,7 +13,7 @@ let Port = process.env.PORT;
 
 app.use(bodyParser.urlencoded({ extended: false })); // cada peticion que se hace pasa por estas lineas
 app.use(bodyParser.json());
-app.use(require('./routes/usuario'));
+app.use(require('./routes/index'));
 
 mongoose.connect(process.env.URLDB, (err, res) => {
     if (err) throw err;
