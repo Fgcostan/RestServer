@@ -7,6 +7,7 @@ require('./config/config');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const path = require('path');
 
 const app = express();
 let Port = process.env.PORT;
@@ -14,6 +15,9 @@ let Port = process.env.PORT;
 app.use(bodyParser.urlencoded({ extended: false })); // cada peticion que se hace pasa por estas lineas
 app.use(bodyParser.json());
 app.use(require('./routes/index'));
+
+//Habilitar public
+app.use(express.static(path.resolve(__dirname, '../public')));
 
 mongoose.connect(process.env.URLDB, (err, res) => {
     if (err) throw err;
